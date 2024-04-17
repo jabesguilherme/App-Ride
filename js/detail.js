@@ -5,9 +5,7 @@ const ride = getRideRecord(rideID)
 document.addEventListener("DOMContentLoaded", async ()=>{
 
     const firtsPosition = ride.data[0]
-    const firstLocationData = await getLocationData(
-        firtsPosition.latitude,
-        firtsPosition.longitude)
+    const firstLocationData = await getLocationData(firtsPosition.latitude,firtsPosition.longitude)
 
     const dataElement = document.createElement("div")
     dataElement.className = "flex-fill d-flex flex-column"
@@ -38,6 +36,23 @@ document.addEventListener("DOMContentLoaded", async ()=>{
     dataElement.appendChild(dateDiv)
 
     document.querySelector("#data").appendChild(dataElement)
+
+    const map = L.map("mapDetail")
+    map.setView([firtsPosition.latitude,firtsPosition.longitude], 17)
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+	maxZoom: 19,
+	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    const positionArray = ride.data.map((position =>{
+        return [position.latitude,position.longitude]
+    }))
+
+    const polyline = L.polyline(positionArray, {color:"#F00"})
+    polyline.addTo(map)
+
+    map.fitBounds(polyline.getBounds())
 
 
 })
